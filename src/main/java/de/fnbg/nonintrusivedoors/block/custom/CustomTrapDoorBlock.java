@@ -1,57 +1,28 @@
 package de.fnbg.nonintrusivedoors.block.custom;
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.TrapDoorBlock;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.BlockSetType;
-import net.minecraft.world.level.block.state.properties.Half;
-import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.Shapes;
-import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraft.core.Direction;
+import net.minecraft.block.BlockTrapDoor;
+import net.minecraft.block.SoundType;
+import net.minecraft.block.material.Material;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
 
-public class CustomTrapDoorBlock extends TrapDoorBlock {
+import javax.annotation.Nullable;
 
-    public CustomTrapDoorBlock(Properties properties, BlockSetType type) {
-        super(properties, type);
+public class CustomTrapDoorBlock extends BlockTrapDoor {
+
+    public CustomTrapDoorBlock(Material material, SoundType soundType) {
+        super(material);
+        this.setSoundType(soundType);
     }
 
-    protected static final VoxelShape EAST_OPEN_AABB = Block.box(0.0D, 0.0D, 0.0D, 3.0D, 16.0D, 16.0D);
-    protected static final VoxelShape WEST_OPEN_AABB = Block.box(13.0D, 0.0D, 0.0D, 16.0D, 16.0D, 16.0D);
-    protected static final VoxelShape SOUTH_OPEN_AABB = Block.box(0.0D, 0.0D, 0.0D, 16.0D, 16.0D, 3.0D);
-    protected static final VoxelShape NORTH_OPEN_AABB = Block.box(0.0D, 0.0D, 13.0D, 16.0D, 16.0D, 16.0D);
-    protected static final VoxelShape BOTTOM_AABB = Block.box(0.0D, 0.0D, 0.0D, 16.0D, 3.0D, 16.0D);
-    protected static final VoxelShape TOP_AABB = Block.box(0.0D, 13.0D, 0.0D, 16.0D, 16.0D, 16.0D);
-
+    @Nullable
     @Override
-    @SuppressWarnings("deprecation")
-    public VoxelShape getCollisionShape(BlockState pState, BlockGetter pLevel, BlockPos pPos,
-            CollisionContext pContext) {
-        if (pState.getValue(OPEN)) {
-            return Shapes.empty();
+    public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess worldIn, BlockPos pos) {
+        if (blockState.getValue(OPEN)) {
+            return NULL_AABB;
         }
-        return super.getCollisionShape(pState, pLevel, pPos, pContext);
+        return super.getCollisionBoundingBox(blockState, worldIn, pos);
     }
-
-    @Override
-    public VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
-        if (!pState.getValue(OPEN)) {
-            return pState.getValue(HALF) == Half.TOP ? TOP_AABB : BOTTOM_AABB;
-        } else {
-            switch ((Direction) pState.getValue(FACING)) {
-                case NORTH:
-                default:
-                    return NORTH_OPEN_AABB;
-                case SOUTH:
-                    return SOUTH_OPEN_AABB;
-                case WEST:
-                    return WEST_OPEN_AABB;
-                case EAST:
-                    return EAST_OPEN_AABB;
-            }
-        }
-    }
-
 }

@@ -1,57 +1,51 @@
 package de.fnbg.nonintrusivedoors.block.custom;
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.block.DoorBlock;
-import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.BlockSetType;
-import net.minecraft.world.level.block.state.properties.DoorHingeSide;
-import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.Shapes;
-import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.core.Direction;
+import net.minecraft.block.BlockDoor;
+import net.minecraft.block.SoundType;
+import net.minecraft.block.material.Material;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.Entity;
+import net.minecraft.item.Item;
+import net.minecraft.init.Items;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
 
-public class CustomDoorBlock extends DoorBlock {
+import javax.annotation.Nullable;
+import java.util.List;
+import java.util.Random;
+import java.util.function.Supplier;
 
-    protected static final VoxelShape SOUTH_AABB = Block.box(0.0D, 0.0D, 0.0D, 16.0D, 16.0D, 3.0D);
-    protected static final VoxelShape NORTH_AABB = Block.box(0.0D, 0.0D, 13.0D, 16.0D, 16.0D, 16.0D);
-    protected static final VoxelShape WEST_AABB = Block.box(13.0D, 0.0D, 0.0D, 16.0D, 16.0D, 16.0D);
-    protected static final VoxelShape EAST_AABB = Block.box(0.0D, 0.0D, 0.0D, 3.0D, 16.0D, 16.0D);
+public class CustomDoorBlock extends BlockDoor {
 
-    public CustomDoorBlock(BlockBehaviour.Properties properties, BlockSetType type) {
-        super(properties, type);
+    private final Supplier<Item> droppedItem;
+
+    public CustomDoorBlock(Material material, SoundType soundType, Supplier<Item> droppedItem) {
+        super(material);
+        this.setSoundType(soundType);
+        this.droppedItem = droppedItem;
     }
 
     @Override
-    @SuppressWarnings("deprecation")
-    public VoxelShape getCollisionShape(BlockState pState, BlockGetter pLevel, BlockPos pPos,
-            CollisionContext pContext) {
-        if (pState.getValue(OPEN)) {
-            return Shapes.empty();
-        }
-        return super.getCollisionShape(pState, pLevel, pPos, pContext);
+    public Item getItemDropped(IBlockState state, Random rand, int fortune) {
+        return state.getValue(HALF) == EnumDoorHalf.UPPER ? Items.AIR : droppedItem.get();
     }
 
     @Override
-    public VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
-        Direction direction = pState.getValue(FACING);
-        boolean flag = !pState.getValue(OPEN);
-        boolean flag1 = pState.getValue(HINGE) == DoorHingeSide.RIGHT;
-        switch (direction) {
-            case EAST:
-            default:
-                return flag ? EAST_AABB : (flag1 ? NORTH_AABB : SOUTH_AABB);
-            case SOUTH:
-                return flag ? SOUTH_AABB : (flag1 ? EAST_AABB : WEST_AABB);
-            case WEST:
-                return flag ? WEST_AABB : (flag1 ? SOUTH_AABB : NORTH_AABB);
-            case NORTH:
-                return flag ? NORTH_AABB : (flag1 ? WEST_AABB : EAST_AABB);
+    public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn, boolean isActualState) {
+        IBlockState actual = isActualState ? state : getActualState(state, worldIn, pos);
+        if (!actual.getValue(OPEN)) {
+            super.addCollisionBoxToList(state, worldIn, pos, entityBox, collidingBoxes, entityIn, isActualState);
         }
     }
 
+    @Nullable
+    @Override
+    public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess worldIn, BlockPos pos) {
+        if (blockState.getValue(OPEN)) {
+            return NULL_AABB;
+        }
+        return super.getCollisionBoundingBox(blockState, worldIn, pos);
+    }
 }
-// Path to original voxelshape (3/16):
-// W:\dec\dec2\client-extra\assets\minecraft\models\block

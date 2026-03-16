@@ -1,127 +1,80 @@
 package de.fnbg.nonintrusivedoors.block;
 
-import de.fnbg.nonintrusivedoors.item.ModItems;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.block.state.properties.BlockSetType;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import de.fnbg.nonintrusivedoors.NonIntrusiveDoors;
 import de.fnbg.nonintrusivedoors.block.custom.CustomDoorBlock;
 import de.fnbg.nonintrusivedoors.block.custom.CustomTrapDoorBlock;
+import net.minecraft.block.Block;
+import net.minecraft.block.SoundType;
+import net.minecraft.block.material.Material;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemDoor;
+import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-import java.util.function.Supplier;
-
+@Mod.EventBusSubscriber(modid = NonIntrusiveDoors.MOD_ID)
 public class ModVanillaBlocks {
-    public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS,
-            "minecraft");
 
-    // overwrite vanilla blocks
-    public static final RegistryObject<Block> ACACIA_TRAPDOOR = registerBlock("acacia_trapdoor",
-            () -> new CustomTrapDoorBlock(BlockBehaviour.Properties.copy(Blocks.ACACIA_TRAPDOOR), BlockSetType.ACACIA));
+    // Saved for use in registerItems — blocks are registered before items
+    private static CustomDoorBlock WOODEN_DOOR, SPRUCE_DOOR, BIRCH_DOOR, JUNGLE_DOOR, ACACIA_DOOR, DARK_OAK_DOOR, IRON_DOOR;
+    private static CustomTrapDoorBlock TRAPDOOR, IRON_TRAPDOOR;
 
-    public static final RegistryObject<Block> ACACIA_DOOR = registerBlock("acacia_door",
-            () -> new CustomDoorBlock(BlockBehaviour.Properties.copy(Blocks.ACACIA_DOOR),
-                    BlockSetType.ACACIA));
+    @SubscribeEvent
+    public static void registerBlocks(RegistryEvent.Register<Block> event) {
+        // Block translation keys must match vanilla tile.*.name lang keys
+        WOODEN_DOOR   = door("wooden_door",   Material.WOOD, 3.0F, "doorWood",    SoundType.WOOD);
+        SPRUCE_DOOR   = door("spruce_door",   Material.WOOD, 3.0F, "doorWood",    SoundType.WOOD);
+        BIRCH_DOOR    = door("birch_door",    Material.WOOD, 3.0F, "doorWood",    SoundType.WOOD);
+        JUNGLE_DOOR   = door("jungle_door",   Material.WOOD, 3.0F, "doorWood",    SoundType.WOOD);
+        ACACIA_DOOR   = door("acacia_door",   Material.WOOD, 3.0F, "doorWood",    SoundType.WOOD);
+        DARK_OAK_DOOR = door("dark_oak_door", Material.WOOD, 3.0F, "doorWood",    SoundType.WOOD);
+        IRON_DOOR     = door("iron_door",     Material.IRON, 5.0F, "doorIron",    SoundType.METAL);
+        TRAPDOOR      = trapdoor("trapdoor",       Material.WOOD, 3.0F, "trapdoor",    SoundType.WOOD);
+        IRON_TRAPDOOR = trapdoor("iron_trapdoor",  Material.IRON, 5.0F, "ironTrapdoor",SoundType.METAL);
 
-    public static final RegistryObject<Block> BAMBOO_TRAPDOOR = registerBlock("bamboo_trapdoor",
-            () -> new CustomTrapDoorBlock(BlockBehaviour.Properties.copy(Blocks.OAK_TRAPDOOR), BlockSetType.BAMBOO));
-
-    public static final RegistryObject<Block> BAMBOO_DOOR = registerBlock("bamboo_door",
-            () -> new CustomDoorBlock(BlockBehaviour.Properties.copy(Blocks.BAMBOO_DOOR).sound(SoundType.BAMBOO),
-                    BlockSetType.BAMBOO));
-
-    public static final RegistryObject<Block> BIRCH_TRAPDOOR = registerBlock("birch_trapdoor",
-            () -> new CustomTrapDoorBlock(BlockBehaviour.Properties.copy(Blocks.BIRCH_TRAPDOOR), BlockSetType.BIRCH));
-
-    public static final RegistryObject<Block> BIRCH_DOOR = registerBlock("birch_door",
-            () -> new CustomDoorBlock(BlockBehaviour.Properties.copy(Blocks.OAK_DOOR),
-                    BlockSetType.BIRCH));
-
-    public static final RegistryObject<Block> CHERRY_TRAPDOOR = registerBlock("cherry_trapdoor",
-            () -> new CustomTrapDoorBlock(BlockBehaviour.Properties.copy(Blocks.CHERRY_TRAPDOOR), BlockSetType.CHERRY));
-
-    public static final RegistryObject<Block> CHERRY_DOOR = registerBlock("cherry_door",
-            () -> new CustomDoorBlock(BlockBehaviour.Properties.copy(Blocks.CHERRY_DOOR),
-                    BlockSetType.CHERRY));
-
-    public static final RegistryObject<Block> CRIMSON_TRAPDOOR = registerBlock("crimson_trapdoor",
-            () -> new CustomTrapDoorBlock(BlockBehaviour.Properties.copy(Blocks.CRIMSON_TRAPDOOR),
-                    BlockSetType.CRIMSON));
-
-    public static final RegistryObject<Block> CRIMSON_DOOR = registerBlock("crimson_door",
-            () -> new CustomDoorBlock(BlockBehaviour.Properties.copy(Blocks.CRIMSON_DOOR),
-                    BlockSetType.CRIMSON));
-
-    public static final RegistryObject<Block> DARK_OAK_TRAPDOOR = registerBlock("dark_oak_trapdoor",
-            () -> new CustomTrapDoorBlock(BlockBehaviour.Properties.copy(Blocks.DARK_OAK_TRAPDOOR),
-                    BlockSetType.DARK_OAK));
-
-    public static final RegistryObject<Block> DARK_OAK_DOOR = registerBlock("dark_oak_door",
-            () -> new CustomDoorBlock(BlockBehaviour.Properties.copy(Blocks.DARK_OAK_DOOR).sound(SoundType.WOOD),
-                    BlockSetType.DARK_OAK));
-
-    public static final RegistryObject<Block> IRON_TRAPDOOR = registerBlock("iron_trapdoor",
-            () -> new CustomTrapDoorBlock(BlockBehaviour.Properties.copy(Blocks.IRON_TRAPDOOR), BlockSetType.IRON));
-
-    public static final RegistryObject<Block> IRON_DOOR = registerBlock("iron_door",
-            () -> new CustomDoorBlock(BlockBehaviour.Properties.copy(Blocks.IRON_DOOR),
-                    BlockSetType.IRON));
-
-    public static final RegistryObject<Block> JUNGLE_TRAPDOOR = registerBlock("jungle_trapdoor",
-            () -> new CustomTrapDoorBlock(BlockBehaviour.Properties.copy(Blocks.JUNGLE_TRAPDOOR), BlockSetType.JUNGLE));
-
-    public static final RegistryObject<Block> JUNGLE_DOOR = registerBlock("jungle_door",
-            () -> new CustomDoorBlock(BlockBehaviour.Properties.copy(Blocks.JUNGLE_DOOR).sound(SoundType.WOOD),
-                    BlockSetType.JUNGLE));
-
-    public static final RegistryObject<Block> MANGROVE_TRAPDOOR = registerBlock("mangrove_trapdoor",
-            () -> new CustomTrapDoorBlock(BlockBehaviour.Properties.copy(Blocks.MANGROVE_TRAPDOOR),
-                    BlockSetType.MANGROVE));
-
-    public static final RegistryObject<Block> MANGROVE_DOOR = registerBlock("mangrove_door",
-            () -> new CustomDoorBlock(BlockBehaviour.Properties.copy(Blocks.MANGROVE_DOOR).sound(SoundType.WOOD),
-                    BlockSetType.MANGROVE));
-
-    public static final RegistryObject<Block> OAK_TRAPDOOR = registerBlock("oak_trapdoor",
-            () -> new CustomTrapDoorBlock(BlockBehaviour.Properties.copy(Blocks.OAK_TRAPDOOR), BlockSetType.OAK));
-
-    public static final RegistryObject<Block> OAK_DOOR = registerBlock("oak_door",
-            () -> new CustomDoorBlock(BlockBehaviour.Properties.copy(Blocks.OAK_DOOR).sound(SoundType.WOOD),
-                    BlockSetType.OAK));
-
-    public static final RegistryObject<Block> SPRUCE_TRAPDOOR = registerBlock("spruce_trapdoor",
-            () -> new CustomTrapDoorBlock(BlockBehaviour.Properties.copy(Blocks.SPRUCE_TRAPDOOR), BlockSetType.SPRUCE));
-
-    public static final RegistryObject<Block> SPRUCE_DOOR = registerBlock("spruce_door",
-            () -> new CustomDoorBlock(BlockBehaviour.Properties.copy(Blocks.SPRUCE_DOOR),
-                    BlockSetType.SPRUCE));
-
-    public static final RegistryObject<Block> WARPED_TRAPDOOR = registerBlock("warped_trapdoor",
-            () -> new CustomTrapDoorBlock(BlockBehaviour.Properties.copy(Blocks.WARPED_TRAPDOOR), BlockSetType.WARPED));
-
-    public static final RegistryObject<Block> WARPED_DOOR = registerBlock("warped_door",
-            () -> new CustomDoorBlock(BlockBehaviour.Properties.copy(Blocks.WARPED_DOOR),
-                    BlockSetType.WARPED));
-
-    // register methods
-
-    private static <T extends Block> RegistryObject<T> registerBlock(String name, Supplier<T> block) {
-        RegistryObject<T> toReturn = BLOCKS.register(name, block);
-        registerBlockItem(name, toReturn);
-        return toReturn;
+        event.getRegistry().register(WOODEN_DOOR);
+        event.getRegistry().register(SPRUCE_DOOR);
+        event.getRegistry().register(BIRCH_DOOR);
+        event.getRegistry().register(JUNGLE_DOOR);
+        event.getRegistry().register(ACACIA_DOOR);
+        event.getRegistry().register(DARK_OAK_DOOR);
+        event.getRegistry().register(IRON_DOOR);
+        event.getRegistry().register(TRAPDOOR);
+        event.getRegistry().register(IRON_TRAPDOOR);
     }
 
-    private static <T extends Block> void registerBlockItem(String name, RegistryObject<T> block) {
-        ModItems.ITEMS.register(name, () -> new BlockItem(block.get(), new Item.Properties()));
+    @SubscribeEvent
+    public static void registerItems(RegistryEvent.Register<Item> event) {
+        // Replace vanilla door items so they place our custom blocks (which have no collision when open)
+        // Item translation keys match vanilla item.*.name lang keys
+        event.getRegistry().register(new ItemDoor(WOODEN_DOOR)  .setTranslationKey("doorOak")    .setRegistryName("minecraft", "wooden_door"));
+        event.getRegistry().register(new ItemDoor(SPRUCE_DOOR)  .setTranslationKey("doorSpruce") .setRegistryName("minecraft", "spruce_door"));
+        event.getRegistry().register(new ItemDoor(BIRCH_DOOR)   .setTranslationKey("doorBirch")  .setRegistryName("minecraft", "birch_door"));
+        event.getRegistry().register(new ItemDoor(JUNGLE_DOOR)  .setTranslationKey("doorJungle") .setRegistryName("minecraft", "jungle_door"));
+        event.getRegistry().register(new ItemDoor(ACACIA_DOOR)  .setTranslationKey("doorAcacia") .setRegistryName("minecraft", "acacia_door"));
+        event.getRegistry().register(new ItemDoor(DARK_OAK_DOOR).setTranslationKey("doorDarkOak").setRegistryName("minecraft", "dark_oak_door"));
+        event.getRegistry().register(new ItemDoor(IRON_DOOR)    .setTranslationKey("doorIron")   .setRegistryName("minecraft", "iron_door"));
+
+        // Replace trapdoor items — trapdoors use ItemBlock, not ItemDoor
+        event.getRegistry().register(new ItemBlock(TRAPDOOR)      .setTranslationKey("trapdoor")    .setRegistryName("minecraft", "trapdoor"));
+        event.getRegistry().register(new ItemBlock(IRON_TRAPDOOR) .setTranslationKey("ironTrapdoor").setRegistryName("minecraft", "iron_trapdoor"));
     }
 
-    public static void register(IEventBus eventBus) {
-        BLOCKS.register(eventBus);
+    private static CustomDoorBlock door(String name, Material material, float hardness, String translationKey, SoundType sound) {
+        CustomDoorBlock block = new CustomDoorBlock(material, sound,
+                () -> Item.getByNameOrId("minecraft:" + name));
+        block.setHardness(hardness);
+        block.setTranslationKey(translationKey);
+        block.setRegistryName("minecraft", name);
+        return block;
+    }
+
+    private static CustomTrapDoorBlock trapdoor(String name, Material material, float hardness, String translationKey, SoundType sound) {
+        CustomTrapDoorBlock block = new CustomTrapDoorBlock(material, sound);
+        block.setHardness(hardness);
+        block.setTranslationKey(translationKey);
+        block.setRegistryName("minecraft", name);
+        return block;
     }
 }
