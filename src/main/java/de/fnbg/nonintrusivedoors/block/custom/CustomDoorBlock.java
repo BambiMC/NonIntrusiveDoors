@@ -1,18 +1,13 @@
 package de.fnbg.nonintrusivedoors.block.custom;
 
 import net.minecraft.block.BlockDoor;
-import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.Item;
-import net.minecraft.init.Items;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Supplier;
@@ -21,31 +16,46 @@ public class CustomDoorBlock extends BlockDoor {
 
     private final Supplier<Item> droppedItem;
 
-    public CustomDoorBlock(Material material, SoundType soundType, Supplier<Item> droppedItem) {
+    public CustomDoorBlock(Material material, Supplier<Item> droppedItem) {
         super(material);
-        this.setSoundType(soundType);
         this.droppedItem = droppedItem;
     }
 
+    /**
+     * Upper half drops nothing; lower half drops the door item.
+     * Overrides BlockDoor which checks (this.blockMaterial == Material.iron), which can
+     * give wrong results since we pass the material explicitly.
+     */
     @Override
-    public Item getItemDropped(IBlockState state, Random rand, int fortune) {
-        return state.getValue(HALF) == EnumDoorHalf.UPPER ? Items.AIR : droppedItem.get();
+    public Item getItemDropped(int meta, Random rand, int fortune) {
+        return (meta & 8) != 0 ? null : droppedItem.get();
     }
 
     @Override
-    public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn, boolean isActualState) {
-        IBlockState actual = isActualState ? state : getActualState(state, worldIn, pos);
-        if (!actual.getValue(OPEN)) {
-            super.addCollisionBoxToList(state, worldIn, pos, entityBox, collidingBoxes, entityIn, isActualState);
+    public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
+        if (isDoorOpen(world, x, y, z)) {
+            return null;
+        }
+        return super.getCollisionBoundingBoxFromPool(world, x, y, z);
+    }
+
+    @Override
+    public void addCollisionBoxesToList(World world, int x, int y, int z,
+                                        AxisAlignedBB mask, List list, Entity entity) {
+        if (!isDoorOpen(world, x, y, z)) {
+            super.addCollisionBoxesToList(world, x, y, z, mask, list, entity);
         }
     }
 
-    @Nullable
-    @Override
-    public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess worldIn, BlockPos pos) {
-        if (blockState.getValue(OPEN)) {
-            return NULL_AABB;
+    /**
+     * Door open state is in the lower half (metadata bit 0x4).
+     * If we're in the upper half (bit 0x8 set), look one block down.
+     */
+    private boolean isDoorOpen(IBlockAccess world, int x, int y, int z) {
+        int meta = world.getBlockMetadata(x, y, z);
+        if ((meta & 8) != 0) {
+            meta = world.getBlockMetadata(x, y - 1, z);
         }
-        return super.getCollisionBoundingBox(blockState, worldIn, pos);
+        return (meta & 4) != 0;
     }
 }

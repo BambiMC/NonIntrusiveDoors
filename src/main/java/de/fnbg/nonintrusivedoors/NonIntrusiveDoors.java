@@ -1,10 +1,11 @@
 package de.fnbg.nonintrusivedoors;
 
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.Mod;
+import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import de.fnbg.nonintrusivedoors.block.ModVanillaBlocks;
 
 @Mod(modid = NonIntrusiveDoors.MOD_ID, name = "Non Intrusive Doors", version = "@VERSION@",
-        acceptedMinecraftVersions = "[1.12,1.13)")
+        acceptedMinecraftVersions = "[1.7.10]")
 public class NonIntrusiveDoors {
 
     public static final String MOD_ID = "nonintrusivedoors";
@@ -14,5 +15,6 @@ public class NonIntrusiveDoors {
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
+        ModVanillaBlocks.replaceAll();
     }
 }
