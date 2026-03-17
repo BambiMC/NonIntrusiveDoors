@@ -27,6 +27,9 @@ Drop the `.jar` from the [releases page](../../releases) into your `mods/` folde
 # Build the mod jar (output: build/libs/)
 ./gradlew build
 
+# If swiching branches, clean first to avoid leftover files
+./gradlew clean build
+
 # Run Minecraft client with the mod loaded
 ./gradlew runClient
 
