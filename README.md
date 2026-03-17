@@ -14,8 +14,8 @@ Tired of getting stuck at the edge of a door in Minecraft? This QOL mod makes al
 
 ## Requirements
 
-- Minecraft **1.20.1**
-- Forge **47.0.19+**
+- Minecraft **1.21.1**
+- NeoForge **21.1.74+**
 
 ## Installation
 
@@ -32,10 +32,15 @@ Drop the `.jar` from the [releases page](../../releases) into your `mods/` folde
 
 # Run a dedicated server with the mod loaded
 ./gradlew runServer
-
-# Generate IDE run configurations (IntelliJ)
-./gradlew genIntellijRuns
 ```
+
+## IDE Setup (VSCode)
+
+Run `./gradlew build` first to download all dependencies, then reload the Java project:
+
+`Ctrl+Shift+P` → **Java: Clean Java Language Server Workspace** → Restart
+
+Requires the [Extension Pack for Java](https://marketplace.visualstudio.com/items?itemName=vscjava.vscode-java-pack) (includes Gradle for Java). The `eclipse` task is not supported by NeoGradle.
 
 ## License
 

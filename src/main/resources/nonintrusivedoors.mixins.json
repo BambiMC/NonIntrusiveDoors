@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "package": "de.fnbg.nonintrusivedoors.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "DoorBlockMixin",
+    "TrapDoorBlockMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
