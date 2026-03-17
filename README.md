@@ -23,8 +23,14 @@ Drop the `.jar` from the [releases page](../../releases) into your `mods/` folde
 
 ## Building from Source
 
+> **First build on the `1.12.2` branch:** always run `./gradlew clean build` instead of just `./gradlew build`.
+> RFG (RetroFuturaGradle) caches intermediate Minecraft source files. If a previous build exists (e.g. from the 1.7.10 branch), the stale cached sources will be used and the build will fail with `extends Packet` / `no interface expected here` errors. A clean wipes those stale artifacts.
+
 ```bash
-# Build the mod jar (output: build/libs/)
+# First build, or after switching branches — always clean first
+./gradlew clean build
+
+# Subsequent builds (no branch switch)
 ./gradlew build
 
 # Run Minecraft client with the mod loaded

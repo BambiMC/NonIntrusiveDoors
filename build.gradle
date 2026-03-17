@@ -17,9 +17,39 @@ java {
 
 minecraft {
     mcVersion = minecraft_version
-mcpMappingChannel = mapping_channel
+    mcpMappingChannel = mapping_channel
     mcpMappingVersion = mapping_version
     username = 'Developer'
+}
+
+repositories {
+    maven {
+        name = 'GT New Horizons'
+        url = 'https://nexus.gtnewhorizons.com/repository/public/'
+    }
+    maven {
+        name = 'minecraft-libraries'
+        url = 'https://libraries.minecraft.net'
+    }
+}
+
+configurations {
+    // Extra compile-only deps for compilePatchedMcJava — not shipped with the mod
+    patchedMcExtras
+}
+
+dependencies {
+    // tv.twitch was bundled with MC 1.12.2 but isn't auto-added by RFG
+    patchedMcExtras 'tv.twitch:twitch:5.16'
+    // log4j.core.helpers.Integers was removed in 2.4+; this fixed variant is from GTNH nexus
+    patchedMcExtras 'org.apache.logging.log4j:log4j-core:2.0-beta9-fixed'
+}
+
+// Extend compilePatchedMcJava's classpath with the missing MC-bundled libraries
+afterEvaluate {
+    tasks.named('compilePatchedMcJava').configure { task ->
+        task.classpath = task.classpath + configurations.patchedMcExtras
+    }
 }
 
 processResources {
