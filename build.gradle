@@ -1,69 +1,75 @@
-plugins {
-    id 'com.gtnewhorizons.retrofuturagradle' version '1.4.2'
-    id 'eclipse'
-    id 'idea'
+buildscript {
+    repositories {
+        maven { url = 'https://maven.minecraftforge.net' }
+        mavenCentral()
+    }
+    dependencies {
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
+    }
 }
 
-version = mod_version
+apply plugin: 'net.minecraftforge.gradle'
+apply plugin: 'eclipse'
+apply plugin: 'maven-publish'
+
 group = mod_group_id
+version = mod_version
 archivesBaseName = mod_id
 
-java {
-    toolchain {
-        // RFG will auto-provision a Java 8 JDK via Foojay if one is not found locally.
-        languageVersion.set(JavaLanguageVersion.of(8))
-    }
-}
+java.toolchain.languageVersion = JavaLanguageVersion.of(8)
+
+println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}"
 
 minecraft {
-    mcVersion = minecraft_version
-    mcpMappingChannel = mapping_channel
-    mcpMappingVersion = mapping_version
-    username = 'Developer'
+    mappings channel: mapping_channel, version: mapping_version
+    runs {
+        client {
+            workingDirectory project.file('run')
+            property 'forge.logging.markers', 'REGISTRIES'
+            property 'forge.logging.console.level', 'debug'
+            mods {
+                nonintrusivedoors {
+                    source sourceSets.main
+                }
+            }
+        }
+        server {
+            workingDirectory project.file('run')
+            property 'forge.logging.markers', 'REGISTRIES'
+            property 'forge.logging.console.level', 'debug'
+            mods {
+                nonintrusivedoors {
+                    source sourceSets.main
+                }
+            }
+        }
+    }
 }
 
-repositories {
-    maven {
-        name = 'GT New Horizons'
-        url = 'https://nexus.gtnewhorizons.com/repository/public/'
-    }
-    maven {
-        name = 'minecraft-libraries'
-        url = 'https://libraries.minecraft.net'
-    }
-}
-
-configurations {
-    // Extra compile-only deps for compilePatchedMcJava — not shipped with the mod
-    patchedMcExtras
-}
+repositories {}
 
 dependencies {
-    // tv.twitch was bundled with MC 1.12.2 but isn't auto-added by RFG
-    patchedMcExtras 'tv.twitch:twitch:5.16'
-    // log4j.core.helpers.Integers was removed in 2.4+; this fixed variant is from GTNH nexus
-    patchedMcExtras 'org.apache.logging.log4j:log4j-core:2.0-beta9-fixed'
-}
-
-// Extend compilePatchedMcJava's classpath with the missing MC-bundled libraries
-afterEvaluate {
-    tasks.named('compilePatchedMcJava').configure { task ->
-        task.classpath = task.classpath + configurations.patchedMcExtras
-    }
+    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 }
 
 processResources {
-    inputs.property 'version', project.version
-    inputs.property 'mcversion', minecraft_version
+    inputs.property 'mod_version', mod_version
     inputs.property 'mod_id', mod_id
     inputs.property 'mod_name', mod_name
+    inputs.property 'mod_license', mod_license
     inputs.property 'mod_description', mod_description
     inputs.property 'mod_authors', mod_authors
+    inputs.property 'loader_version_range', loader_version_range
+    inputs.property 'forge_version_range', forge_version_range
+    inputs.property 'minecraft_version_range', minecraft_version_range
 
-    filesMatching('mcmod.info') {
-        expand 'version': project.version, 'mcversion': minecraft_version,
-               'mod_id': mod_id, 'mod_name': mod_name,
-               'mod_description': mod_description, 'mod_authors': mod_authors
+    filesMatching('META-INF/mods.toml') {
+        expand 'mod_version': mod_version, 'mod_id': mod_id,
+               'mod_name': mod_name, 'mod_license': mod_license,
+               'mod_description': mod_description, 'mod_authors': mod_authors,
+               'loader_version_range': loader_version_range,
+               'forge_version_range': forge_version_range,
+               'minecraft_version_range': minecraft_version_range
     }
 }
 
@@ -77,6 +83,8 @@ jar {
         ])
     }
 }
+
+jar.finalizedBy('reobfJar')
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'

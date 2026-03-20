@@ -1,16 +1,1 @@
-pluginManagement {
-    repositories {
-        gradlePluginPortal()
-        maven {
-            name = 'GT New Horizons'
-            url = 'https://nexus.gtnewhorizons.com/repository/public/'
-        }
-    }
-}
-
-plugins {
-    // Auto-provisions Java toolchains (e.g. Java 8) if not found locally
-    id 'org.gradle.toolchains.foojay-resolver-convention' version '0.5.0'
-}
-
 rootProject.name = 'NonIntrusiveDoors'
